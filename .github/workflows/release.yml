@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    name: Publish the image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+      - run: bun install --frozen-lockfile
+      - run: bun build src/server.ts --target bun --production --sourcemap=linked --outdir ./dist
+      - name: Build and push
+        env:
+          ACTOR: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          image="ghcr.io/reindeer-ai/nx-cache:${TAG#v}"
+          echo "$TOKEN" | docker login ghcr.io --username "$ACTOR" --password-stdin
+          docker build --file Dockerfile --tag "$image" .
+          docker push "$image"

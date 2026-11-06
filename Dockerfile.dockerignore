@@ -1,0 +1,3 @@
+# The image sees only what it copies: the build output.
+*
+!dist

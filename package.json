@@ -1,0 +1,30 @@
+{
+  "name": "@reindeer/nx-cache",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "A remote cache server for Nx, on any bucket, that pull requests cannot poison",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Reindeer-AI/nx-cache.git"
+  },
+  "exports": {
+    "./server": "./src/server.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1159.0",
+    "@azure/identity": "^4.14.1",
+    "@azure/storage-blob": "^12.34.0",
+    "@google-cloud/storage": "^7.22.0",
+    "@t3-oss/env-core": "^0.13.11",
+    "jose": "^6.2.14",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "bun-types": "^1.4.4",
+    "testcontainers": "^12.2.1",
+    "typescript": "6.0.3",
+    "@biomejs/biome": "^2.6.4"
+  }
+}

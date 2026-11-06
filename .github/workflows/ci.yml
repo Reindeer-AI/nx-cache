@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, typecheck and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+      - run: bun install --frozen-lockfile
+      - run: echo "$PWD/node_modules/.bin" >> "$GITHUB_PATH"
+      - run: biome check .
+      - run: tsc --noEmit
+      - run: bun test ./test --path-ignore-patterns='test/integration/**'
+      - run: bun test ./test/integration
