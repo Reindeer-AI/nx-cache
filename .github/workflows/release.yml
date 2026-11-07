@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: read
-  packages: write
+  id-token: write
 
 jobs:
   image:
@@ -19,13 +19,18 @@ jobs:
       - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
       - run: bun install --frozen-lockfile
       - run: bun build src/server.ts --target bun --production --sourcemap=linked --outdir ./dist
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        id: gcp
+        with:
+          workload_identity_provider: projects/501901363747/locations/global/workloadIdentityPools/github-actions/providers/github
+          service_account: nx-cache-release@reindeer-external-project.iam.gserviceaccount.com
+          token_format: access_token
       - name: Build and push
         env:
-          ACTOR: ${{ github.actor }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ steps.gcp.outputs.access_token }}
           TAG: ${{ github.ref_name }}
         run: |
-          image="ghcr.io/reindeer-ai/nx-cache:${TAG#v}"
-          echo "$TOKEN" | docker login ghcr.io --username "$ACTOR" --password-stdin
+          image="us-docker.pkg.dev/reindeer-external-project/public/nx-cache:${TAG#v}"
+          echo "$TOKEN" | docker login us-docker.pkg.dev --username oauth2accesstoken --password-stdin
           docker build --file Dockerfile --tag "$image" .
           docker push "$image"

@@ -67,7 +67,7 @@ docker run -d --restart=always -p 127.0.0.1:8080:8080 \
   -e OIDC_AUDIENCE=https://cache.example.com \
   -e GITHUB_REPOSITORY_ID="$(gh api repos/OWNER/REPO -q .id)" \
   -e TOKEN_KEY="$(openssl rand -base64 32)" \
-  ghcr.io/reindeer-ai/nx-cache:<version>
+  us-docker.pkg.dev/reindeer-external-project/public/nx-cache:<version>
 ```
 
 Keep `TOKEN_KEY` secret and stable: anyone holding it can write to `main`, and changing it
