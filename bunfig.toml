@@ -1,11 +1,2 @@
 [install]
 minimumReleaseAge = 604800 # 7 days in seconds
-# Temporary: pi 1.5.0 (published 2026-11-02) before it is 7 days old. Remove this list on or after 2026-11-09.
-minimumReleaseAgeExcludes = [
-  "@earendil-works/pi-agent-core",
-  "@earendil-works/pi-coding-agent",
-  "@earendil-works/pi-mcp",
-  "@earendil-works/pi-tui",
-  "@isaacs/nonrecursive-glob-match",
-  "minimatch",
-]
