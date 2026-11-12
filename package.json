@@ -1,6 +1,6 @@
 {
   "name": "@reindeer/nx-cache",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "license": "Apache-2.0",
   "description": "A remote cache server for Nx, on any bucket, that pull requests cannot poison",
