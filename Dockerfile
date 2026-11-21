@@ -2,7 +2,7 @@
 FROM oven/bun:1.4.4-slim
 
 WORKDIR /app
-COPY dist ./
+COPY dist/server.js dist/server.js.map ./
 
 ENV NODE_ENV=production \
     PORT=8080
