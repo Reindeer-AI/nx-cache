@@ -23,11 +23,18 @@ const tokens = new Tokens({
   defaultBranch: env.GITHUB_DEFAULT_BRANCH,
 });
 const store = createStore(env.STORE, env.BUCKET, { s3Endpoint: env.AWS_ENDPOINT_URL_S3 });
+/**
+ * How long a terminating server keeps serving with /readyz failing: the load balancer needs two
+ * failed checks 5s apart to stop picking it, and keeps sending requests for a while after that.
+ */
+const DRAIN_MS = 45_000;
 
+let ready = true;
 const server = Bun.serve({
   port: env.PORT,
   maxRequestBodySize: MAX_ENTRY_BYTES,
   idleTimeout: NO_IDLE_TIMEOUT,
+  routes: { '/readyz': () => new Response(null, { status: ready ? 200 : 503 }) },
   fetch: createApp({ tokens, store, log }),
   error(error) {
     log('error', 'request failed', { error: String(error) });
@@ -37,9 +44,11 @@ const server = Bun.serve({
 
 log('info', 'listening', { port: env.PORT, store: env.STORE, bucket: env.BUCKET });
 
-// Lets in-flight uploads and downloads finish instead of cutting them off.
+// Leaves the load balancer while still serving, then lets in-flight uploads and downloads finish.
 process.on('SIGTERM', async () => {
   log('info', 'draining');
+  ready = false;
+  await Bun.sleep(DRAIN_MS);
   await server.stop();
   process.exit(0);
 });
